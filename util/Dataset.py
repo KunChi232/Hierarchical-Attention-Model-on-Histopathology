@@ -6,27 +6,38 @@ import pickle
 
 def load_data(cancer_type = 'COAD', level = 'slide'):
     if cancer_type == 'COAD':
-        all_features = joblib.load('/data/Model/representation_visualize/2021-01-21_15-33-08_ResNet18SimCLR/ResNet50ImageNet_training_feature.pkl')
-        all_features.update(joblib.load('/data/Model/representation_visualize/2021-01-21_15-33-08_ResNet18SimCLR/ResNet50ImageNet_testing_feature.pkl'))
+        
+        patch_features = joblib.load('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_feature_tumor_only.pkl')
 
-        with open('/data/Model/representation_visualize/2021-01-21_15-33-08_ResNet18SimCLR/ResNet50ImageNet_slide_cluster_label_k=10.pkl', 'rb') as f:
+        with open('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_{}_cluster_label_k=10_tumor_only.pkl'.format(level), 'rb') as f:
             cluster_label = pickle.load(f)
             
-        tumor_patch = np.load('/data/Model/512dense_tumor_Zenodo+DrYu_0.5.npy')
-        tumor_patch = set([p.split('/')[-1][:-4] for p in tumor_patch])
+    elif cancer_type == 'READ':
+        
+        with open('../data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_TCGA_feature_tumor_only.pkl', 'rb') as f:
+            patch_features = pickle.load(f)
+
+        with open('/data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_TCGA_{}_cluster_label_k=10_tumor_only.pkl', 'rb') as f:
+            cluster_label = pickle.load(f)
+
+    elif cancer_type == "CRC" :
+
+        patch_features = joblib.load('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_feature_tumor_only.pkl')
+
+        with open('../data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_TCGA_feature_tumor_only.pkl', 'rb') as f:
+            patch_features.update(pickle.load(f))
+
+
+        with open('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_{}_cluster_label_k=10_tumor_only.pkl'.format(level), 'rb') as f:
+            cluster_label = pickle.load(f)
+
+        with open('/data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_TCGA_{}_cluster_label_k=10_tumor_only.pkl', 'rb') as f:
+            cluster_label.update(pickle.load(f))
     else:
-        
-        with open('/data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_feature.pkl', 'rb') as f:
-            all_features = pickle.load(f)
+        raise ValueError("Not an available cancer type!")
 
-        with open('/data/READ_Frozen/EXTRACTED_FEATURE/R50ImageNet_slide_cluster_label_k=10.pkl', 'rb') as f:
-            cluster_label = pickle.load(f)
-            
-        tumor_patch = np.load('/data/msimss_tcga/read_tumor_Zenodo+DrYu_0.5.npy')
-        tumor_patch = set([p.split('/')[-1][:-4] for p in tumor_patch])
         
-        
-    return all_features, cluster_label, tumor_patch
+    return patch_features, cluster_label
 
 
 def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup):
