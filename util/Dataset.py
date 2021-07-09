@@ -6,7 +6,7 @@ import pickle
 
 def load_data(cancer_type = 'COAD', level = 'slide'):
     if cancer_type == 'COAD':
-        
+
         patch_features = joblib.load('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_feature_tumor_only.pkl')
 
         with open('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_{}_cluster_label_k=10_tumor_only.pkl'.format(level), 'rb') as f:
@@ -40,27 +40,27 @@ def load_data(cancer_type = 'COAD', level = 'slide'):
     return patch_features, cluster_label
 
 
-def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup):
+def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup, level = 'slide'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
     test_cluster = {}
     
     for k, v in cluster_label.items():
         p_id = k[:12]
-        slide_id = k[:23]
-        if(slide_id[13] == '1') : continue
+        id_ = k[:12] if level == 'patient' else k[:23]
         if(p_id in train_patient):
-            train_cluster[slide_id] = [[] for i in range(10)]
+            train_cluster[id_] = [[] for i in range(10)]
             for p, c in v.items():
-                if(p not in tumor_patch):
-                    continue
-                train_cluster[slide_id][c].append(p)
+                # if(p not in tumor_patch):
+                #     continue
+                if(p[13] == '1') : continue
+                train_cluster[id_][c].append(p)
         elif(p_id in test_patient):
-            test_cluster[slide_id] = [[] for i in range(10)]
+            test_cluster[id_] = [[] for i in range(10)]
             for p, c in v.items():
-                if(p not in tumor_patch):
-                    continue
-                test_cluster[slide_id][c].append(p)    
+                # if(p not in tumor_patch):
+                #     continue
+                test_cluster[id_][c].append(p)    
                 
                 
     drop = []
