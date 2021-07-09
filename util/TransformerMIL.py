@@ -87,7 +87,7 @@ class Transformer(nn.Module):
     
     
 class MIL(nn.Module):
-    def __init__(self, hidden_dim = 512, num_class = 2, encoder_layer = 1, k_sample = 2):
+    def __init__(self, hidden_dim = 512, num_class = 2, encoder_layer = 1, k_sample = 2, tau = 0.7):
         super().__init__()
         
         self.k_sample = k_sample
@@ -97,7 +97,7 @@ class MIL(nn.Module):
         self.K = 1
         self.subtyping = True
         
-        self.instance_loss_fn = SmoothTop1SVM(num_class, tau=0.5).cuda()
+        self.instance_loss_fn = SmoothTop1SVM(num_class, tau = tau).cuda()
         
         self.attention_V2 = nn.Sequential(
             nn.Linear(self.L, self.D),
