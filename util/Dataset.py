@@ -40,6 +40,17 @@ def load_data(cancer_type = 'COAD', level = 'slide'):
     return patch_features, cluster_label
 
 
+def drop(cluster, threshold):
+    drop = []
+    for k, v in cluster.items():
+        total = sum([len(c) for c in v])
+        if(total < threshold):
+            drop.append(k)
+
+    for s_id in drop:
+        del cluster[s_id]
+
+
 def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup, level = 'slide'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
@@ -63,24 +74,8 @@ def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_ind
                 test_cluster[id_][c].append(p)    
                 
                 
-    drop = []
-    for k, v in train_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del train_cluster[s_id]
-
-
-    drop = []
-    for k, v in test_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del test_cluster[s_id]
+    drop(train_cluster, 50)
+    drop(test_cluster, 50)
         
     pos_count = 0    
     for k in train_cluster.keys():
