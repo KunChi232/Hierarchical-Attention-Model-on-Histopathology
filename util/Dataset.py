@@ -103,47 +103,32 @@ def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_ind
     return train_dataset, test_dataset, pos_count, len(train_cluster) - pos_count
 
 
-def wgd_create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup):
+def wgd_create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup, level = 'slide'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
     test_cluster = {}
     
     for k, v in cluster_label.items():
         p_id = k[:15]
-        slide_id = k[:23]
-        if(slide_id[13] == '1') : continue
+        id_ = k[:12] if level == 'patient' else k[:23]
         if(p_id in train_patient):
-            train_cluster[slide_id] = [[] for i in range(10)]
+            train_cluster[id_] = [[] for i in range(10)]
             for p, c in v.items():
-                if(p not in tumor_patch):
-                    continue
-                train_cluster[slide_id][c].append(p)
+                # if(p not in tumor_patch):
+                #     continue
+                if(p[13] == '1') : continue
+                train_cluster[id_][c].append(p)
         elif(p_id in test_patient):
-            test_cluster[slide_id] = [[] for i in range(10)]
+            test_cluster[id_] = [[] for i in range(10)]
             for p, c in v.items():
-                if(p not in tumor_patch):
-                    continue
-                test_cluster[slide_id][c].append(p)    
+                # if(p not in tumor_patch):
+                #     continue
+                if(p[13] == '1') : continue
+                test_cluster[id_][c].append(p)    
                 
                 
-    drop = []
-    for k, v in train_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del train_cluster[s_id]
-
-
-    drop = []
-    for k, v in test_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del test_cluster[s_id]
+    drop(train_cluster, 50)
+    drop(test_cluster, 50)
         
     pos_count = 0    
     for k in train_cluster.keys():
@@ -152,7 +137,10 @@ def wgd_create_cv_data(patients, all_features, cluster_label, tumor_patch, train
     test_pos_count = 0    
     for k in test_cluster.keys():
         test_pos_count += lookup[k[:15]]
-    print(test_pos_count, len(test_cluster) - test_pos_count)
+
+    print('Training Postive: %d, Training Negative: %d' %(pos_count, len(train_cluster) - pos_count))
+    print('Testing Postive: %d, Testing Negative: %d' %(test_pos_count, len(test_cluster) - test_pos_count))
+
     train_dataset = ClusterDataset(
         features = all_features,
         cluster = train_cluster,
@@ -176,7 +164,6 @@ def msimss_create_cv_data(patients, all_features, cluster_label, train_index, te
     
     for k, v in cluster_label.items():
         p_id = k[:12]
-        slide_id = k[:23]
         if(p_id in train_patient):
             train_cluster[p_id] = [[] for i in range(10)]
             for p, c in v.items():
@@ -191,24 +178,8 @@ def msimss_create_cv_data(patients, all_features, cluster_label, train_index, te
                 test_cluster[p_id][c].append(p)    
                 
                 
-    drop = []
-    for k, v in train_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del train_cluster[s_id]
-
-
-    drop = []
-    for k, v in test_cluster.items():
-        total = sum([len(c) for c in v])
-        if(total < 50) :
-            drop.append(k)
-
-    for s_id in drop:
-        del test_cluster[s_id]
+    drop(train_cluster, 50)
+    drop(test_cluster, 50)
         
     pos_count = 0    
     for k in train_cluster.keys():
@@ -216,8 +187,10 @@ def msimss_create_cv_data(patients, all_features, cluster_label, train_index, te
     test_pos_count = 0    
     for k in test_cluster.keys():
         test_pos_count += lookup[k[:12]]
-    print(test_pos_count, len(test_cluster) - test_pos_count)    
-           
+
+    print('Training Postive: %d, Training Negative: %d' %(pos_count, len(train_cluster) - pos_count))
+    print('Testing Postive: %d, Testing Negative: %d' %(test_pos_count, len(test_cluster) - test_pos_count))
+            
     train_dataset = ClusterDataset(
         features = all_features,
         cluster = train_cluster,
