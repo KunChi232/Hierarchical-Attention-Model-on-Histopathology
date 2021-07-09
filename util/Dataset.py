@@ -84,14 +84,15 @@ def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_ind
     test_pos_count = 0    
     for k in test_cluster.keys():
         test_pos_count += lookup[k[:12]]
-    print(test_pos_count, len(test_cluster) - test_pos_count)    
+
+    print('Training Postive: %d, Training Negative: %d' %(pos_count, len(train_cluster) - pos_count))
+    print('Testing Postive: %d, Testing Negative: %d' %(test_pos_count, len(test_cluster) - test_pos_count))
     
     train_dataset = ClusterDataset(
         features = all_features,
         cluster = train_cluster,
         cls_lookup = lookup,
     )
-
 
     test_dataset = ClusterDataset(
         features = all_features,
