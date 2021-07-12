@@ -39,6 +39,16 @@ def load_data(cancer_type = 'COAD', level = 'slide'):
         
     return patch_features, cluster_label
 
+def load_label(Gene, type):
+    if(Gene != 'MSI'):
+        with open('/data/Labels/{}_{}.pkl'.format(Gene, type), 'rb') as f:
+            dic = pickle.load(f)
+        return dic
+    else:
+        with open('/data/Labels/Kather_MSI.pkl', 'rb') as f:
+            dic = pickle.load(f)
+        return dic
+        
 
 def drop(cluster, threshold):
     drop = []
