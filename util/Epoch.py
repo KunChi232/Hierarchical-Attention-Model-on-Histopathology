@@ -53,8 +53,16 @@ class Epoch:
 
 
 class TrainEpoch(Epoch):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model, loss, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
+        super().__init__(
+            model,
+            loss,
+            device,
+            stage,
+            optimizer,
+            positive_count,
+            negative_count
+        )
 
     def on_epoch_start(self):
         self.model.train()
@@ -72,8 +80,16 @@ class TrainEpoch(Epoch):
 
 
 class ValidEpoch(Epoch):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, model, loss, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
+        super().__init__(
+            model,
+            loss,
+            device,
+            stage,
+            optimizer,
+            positive_count,
+            negative_count
+        )
     
     def on_epoch_start(self):
         self.model.eval()
