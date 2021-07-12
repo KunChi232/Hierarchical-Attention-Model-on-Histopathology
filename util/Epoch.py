@@ -7,7 +7,7 @@ import sys
 
 from sklearn.metrics import roc_auc_score, average_precision_score
 class Epoch:
-    def __init__(self, model, loss, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
+    def __init__(self, model, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
         self.model = model
         self.loss = loss
         self.device = device
@@ -21,7 +21,6 @@ class Epoch:
 
     def to_device(self):
         self.model.to(self.device)
-        self.loss.to(self.device)
         if(self.optimizer):
             self.optimizer.to(self.device)
 
@@ -53,10 +52,9 @@ class Epoch:
 
 
 class TrainEpoch(Epoch):
-    def __init__(self, model, loss, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
+    def __init__(self, model, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
         super().__init__(
             model,
-            loss,
             device,
             stage,
             optimizer,
@@ -80,10 +78,9 @@ class TrainEpoch(Epoch):
 
 
 class ValidEpoch(Epoch):
-    def __init__(self, model, loss, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
+    def __init__(self, model, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
         super().__init__(
             model,
-            loss,
             device,
             stage,
             optimizer,
