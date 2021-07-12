@@ -9,7 +9,6 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 class Epoch:
     def __init__(self, model, device = 'cuda', stage = 'Train', optimizer = None, positive_count = 0, negative_count = 0):
         self.model = model
-        self.loss = loss
         self.device = device
         self.stage = stage
         self.optimizer = optimizer
