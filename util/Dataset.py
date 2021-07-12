@@ -48,7 +48,16 @@ def load_label(Gene, type):
         with open('/data/Labels/Kather_MSI.pkl', 'rb') as f:
             dic = pickle.load(f)
         return dic
-        
+
+def get_available_id(lookup, cluster_label):
+    has_label_patient_id = list(lookup.keys())
+    available_ids = []
+    for p in cluster_label.keys():
+        p = p[:12]
+        if(p not in available_ids and p in has_label_patient_id):
+            available_ids.append(p)
+    return available_ids
+      
 
 def drop(cluster, threshold):
     drop = []
