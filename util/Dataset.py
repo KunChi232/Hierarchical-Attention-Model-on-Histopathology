@@ -39,15 +39,19 @@ def load_data(cancer_type = 'COAD', level = 'slide'):
         
     return patch_features, cluster_label
 
-def load_label(Gene, type):
-    if(Gene != 'MSI'):
-        with open('/data/Labels/{}_{}.pkl'.format(Gene, type), 'rb') as f:
+def load_label(task, gene = None, type = None):
+    if(task == 'CNA'):
+        with open('/data/Labels/{}_{}.pkl'.format(gene, type), 'rb') as f:
             dic = pickle.load(f)
         return dic
-    else:
+    elif(task == 'MSI'):
         with open('/data/Labels/Kather_MSI.pkl', 'rb') as f:
             dic = pickle.load(f)
         return dic
+    else:
+        with open('/data/Labels/TCGA_{}.pkl'.format(task), 'rb') as f:
+            dic = pickle.load(f)
+        return dic       
 
 def get_available_id(lookup, cluster_label):
     has_label_patient_id = list(lookup.keys())
@@ -176,7 +180,7 @@ def wgd_create_cv_data(patients, all_features, cluster_label, tumor_patch, train
     return train_dataset, test_dataset, pos_count, len(train_cluster) - pos_count
 
 
-def msimss_create_cv_data(patients, all_features, cluster_label, train_index, test_index, lookup):
+def msimss_create_cv_data(patients, all_features, cluster_label, train_index, test_index, lookup, level = 'patient'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
     test_cluster = {}
