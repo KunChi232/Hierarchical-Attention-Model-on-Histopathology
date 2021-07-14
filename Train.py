@@ -19,14 +19,16 @@ parser.add_argument('--level', type=str, default = 'slide',
 parser.add_argument('--hidden_dim', type = int, default = 2048,
                     help = 'patch features dimension')
 parser.add_argument('--encoder_layer', type = int, default = 1,
-                    help='Number of Transformer Encoder layer')
+                    help = 'Number of Transformer Encoder layer')
 parser.add_argument('--k_sample', type = int, default = 2,
-                    help='Number of top and bottom cluster to be selected')
+                    help = 'Number of top and bottom cluster to be selected')
 parser.add_argument('--save_path', type = str,
-                    help='Model save path')
+                    help = 'Model save path')
+parser.add_argument('--task', type = str,
+                    help = 'MSI, CNA, WDG, KRAS, etc.')
 parser.add_argument('--gene', type = str)
 parser.add_argument('--mutation_type', type = str, default = None,
-                    help='Deletion or Amplification')
+                    help = 'Deletion or Amplification')
 
 parser.add_argument('--lr', type = float, default = 3e-4)
 parser.add_argument('--epoch', type = int, default = 60)
@@ -39,15 +41,18 @@ parser.add_argument('--kfold', type = int, default = 5)
 if __name__ == '__main__':
     args = parser.parse_args()
     
+    if(args.task == 'CNA'):
+        if(args.gene == None or args.mutation_type == None ):
+            raise ValueError('gene and mutation type parameters cannot be empty')
+
     k_fold = KFold(n_splits = args.kfold)
     
 
-    lookup_dic = load_label(args.gene, args.mutation_type)
+    lookup_dic = load_label(args.task, args.gene, args.mutation_type)
     patches_features, cluster_labels = load_data(cancer_type = args.cancer_type,
                                                 level = args.level,)
 
     available_patient_id = get_available_id(lookup_dic, cluster_labels)
-
 
     if(args.gene == 'MSI'):
         cv_data_func = msimss_create_cv_data
