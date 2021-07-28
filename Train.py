@@ -79,6 +79,8 @@ if __name__ == '__main__':
     for i, (train_index, test_index) in enumerate((k_fold.split(available_patient_id))):
         if(args.evaluate_mode == 'holdout'):
             train_index, val_index = train_test_split(train_index, test_size = 0.25, random_state=42)
+        else:
+            val_index = test_index
         train_dataset, test_dataset, positive_count, negative_count = cv_data_func(available_patient_id,
                                                                                     patches_features,
                                                                                     cluster_labels,
@@ -116,5 +118,27 @@ if __name__ == '__main__':
                 torch.save(model_name)
                 print('Model save # {}'.format(model_name))
         
+
+        # holdout test
         if(args.evaluate_mode == 'holdout'):
+            model.load_state_dict(torch.load(model_name))
+
+            _, test_dataset, positive_count, negative_count = cv_data_func(available_patient_id,
+                                                                            patches_features,
+                                                                            cluster_labels,
+                                                                            train_index,
+                                                                            test_index,
+                                                                            lookup_dic,
+                                                                            level = args.level)
+            test_loader = Dataloader(test_dataset, batch_size = 1, shuffle = False, num_workers = 4, pin_memory = True, dropout = False)
+
+            
+            test_epoch = ValidEpoch(model, device = 'cuda', stage = 'Holdout testing', 
+                                positive_count = positive_count, negative_count = negative_count)
+
+            test_logs = test_epoch.run(test_loader)
+
             break
+
+
+            
