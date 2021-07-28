@@ -4,7 +4,15 @@ import joblib
 import pickle
 
 
-def load_data(cancer_type = 'COAD', level = 'slide'):
+def load_data(cancer_type = 'COAD', level = 'slide', use_kather_data = True):
+    if(use_kather_data):
+        with open('../data/kather_msimss/Feature/R50ImageNet_feature.pkl', 'rb') as f:
+            patch_features = pickle.load(f)
+        with open('../data/kather_msimss/Feature/R50ImageNet_patient_cluster_label_k=10.pkl', 'rb') as f:
+            cluster_label = pickle.load(f)
+            
+        return patch_features, cluster_label 
+
     if cancer_type == 'COAD':
 
         patch_features = joblib.load('../data/COAD_Frozen/EXTREACT_FEATURE/ResNet50ImageNet_TCGA_feature_tumor_only.pkl')
@@ -39,19 +47,21 @@ def load_data(cancer_type = 'COAD', level = 'slide'):
         
     return patch_features, cluster_label
 
-def load_label(task, gene = None, type = None):
-    if(task == 'CNA'):
-        with open('/data/Labels/{}_{}.pkl'.format(gene, type), 'rb') as f:
-            dic = pickle.load(f)
-        return dic
-    elif(task == 'MSI'):
-        with open('/data/Labels/Kather_MSI.pkl', 'rb') as f:
-            dic = pickle.load(f)
-        return dic
-    else:
-        with open('/data/Labels/TCGA_{}.pkl'.format(task), 'rb') as f:
-            dic = pickle.load(f)
-        return dic       
+def load_label(path):
+    # if(task == 'CNA'):
+    #     with open('/data/Labels/{}_{}.pkl'.format(gene, type), 'rb') as f:
+    #         dic = pickle.load(f)
+    #     return dic
+    # elif(task == 'MSI'):
+    #     with open('/data/Labels/Kather_MSI.pkl', 'rb') as f:
+    #         dic = pickle.load(f)
+    #     return dic
+    # else:
+    #     with open('/data/Labels/TCGA_{}.pkl'.format(task), 'rb') as f:
+    #         dic = pickle.load(f)
+    with open(path, 'rb') as f:
+        dic = pickle.load(f)
+    return dic       
 
 def get_available_id(lookup, cluster_label):
     has_label_patient_id = list(lookup.keys())
