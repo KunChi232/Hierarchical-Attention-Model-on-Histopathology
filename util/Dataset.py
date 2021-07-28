@@ -83,6 +83,15 @@ def load_label(path):
         dic = pickle.load(f)
     return dic       
 
+def get_TMA_available_id(keys, lookup, tumor_id_lookup):
+    available_ids = []
+    for p in keys:
+        arr = p.split('_')
+        name = '_'.join((arr[0], arr[1], arr[2]))
+        if(name in tumor_id_lookup and tumor_id_lookup in lookup.keys()):
+            available_ids.append(tumor_id_lookup[name])
+    available_ids = set(available_ids)
+    return available_ids
 def get_available_id(lookup, cluster_label, use_kather_data):
     has_label_patient_id = list(lookup.keys())
     available_ids = []
