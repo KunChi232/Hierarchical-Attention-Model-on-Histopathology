@@ -24,11 +24,15 @@ parser.add_argument('--k_sample', type = int, default = 2,
                     help = 'Number of top and bottom cluster to be selected')
 parser.add_argument('--save_path', type = str,
                     help = 'Model save path')
-parser.add_argument('--task', type = str,
-                    help = 'MSI, CNA, WDG, KRAS, etc.')
-parser.add_argument('--gene', type = str)
-parser.add_argument('--mutation_type', type = str, default = None,
-                    help = 'Deletion or Amplification')
+# parser.add_argument('--task', type = str,
+#                     help = 'MSI, CNA, WDG, KRAS, etc.')
+# parser.add_argument('--gene', type = str)
+# parser.add_argument('--mutation_type', type = str, default = None,
+#                     help = 'Deletion or Amplification')
+
+parser.add_argument('--use_kather_data', type = bool, default = True)
+parser.add_argument('--label', type = str, default = None,
+                    help = 'path to label pickle file')
 
 parser.add_argument('--lr', type = float, default = 3e-4)
 parser.add_argument('--epoch', type = int, default = 60)
@@ -41,14 +45,17 @@ parser.add_argument('--kfold', type = int, default = 5)
 if __name__ == '__main__':
     args = parser.parse_args()
     
-    if(args.task == 'CNA'):
-        if(args.gene == None or args.mutation_type == None ):
-            raise ValueError('gene and mutation type parameters cannot be empty')
+    # if(args.task == 'CNA'):
+    #     if(args.gene == None or args.mutation_type == None ):
+    #         raise ValueError('gene and mutation type parameters cannot be empty')
+
+    if(args.label == None):
+        raise ValueError('label pickle file path cannot be empty')
 
     k_fold = KFold(n_splits = args.kfold)
     
 
-    lookup_dic = load_label(args.task, args.gene, args.mutation_type)
+    lookup_dic = load_label(args.label)
     patches_features, cluster_labels = load_data(cancer_type = args.cancer_type,
                                                 level = args.level,)
 
