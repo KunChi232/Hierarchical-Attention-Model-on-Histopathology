@@ -4,6 +4,7 @@ from torch.utils.data import Dataloader
 
 from util.Dataset import load_data, load_label, get_available_id, create_cv_data, msimss_create_cv_data, wgd_create_cv_data
 from util.TransformerMIL import MIL
+from util.EMA import EMA
 from util.Epoch import TrainEpoch, ValidEpoch
 
 from sklearn.model_selection import KFold, train_test_split
@@ -41,8 +42,6 @@ parser.add_argument('--tau', type = float, default = 0.7)
 parser.add_argument('--evaluate mode', type = str, default='holdout',
                     help='holdout or kfold')
 parser.add_argument('--kfold', type = int, default = 5)
-
-
 
 
 if __name__ == '__main__':
@@ -95,6 +94,7 @@ if __name__ == '__main__':
                                     num_workers = 4, pin_memory = True, drop_last = False)
 
         model = MIL(hidden_dim = args.hidden_dim, encoder_layer = args.encoder_layer, k_sample = args.k_sample, tau = args.tau)
+        model = EMA(model, 0.999)
         optimizer = torch.optim.SGD(model.parameters(), lr = args.lr, weight_decay = 5e-4, momentum = 0.9, nesterov = True)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max = args.epoch, eta_min = 0, last_epoch = -1)
 
