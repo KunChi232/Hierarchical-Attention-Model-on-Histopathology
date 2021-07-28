@@ -6,9 +6,9 @@ from util.Dataset import load_data, load_label, get_available_id, create_cv_data
 from util.TransformerMIL import MIL
 from util.Epoch import TrainEpoch, ValidEpoch
 
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
 import argparse
-import os
+import os, random
 
 parser = argparse.ArgumentParser("Experimental Setting")
 
@@ -46,6 +46,7 @@ parser.add_argument('--kfold', type = int, default = 5)
 
 
 if __name__ == '__main__':
+    random.seed(1)
     args = parser.parse_args()
     
     # if(args.task == 'CNA'):
@@ -66,15 +67,18 @@ if __name__ == '__main__':
                                                 level = args.level, use_kather_data= args.use_kather_data)
 
     available_patient_id = get_available_id(lookup_dic, cluster_labels)
+    available_patient_id = random.sample(available_patient_id, len(available_patient_id))
+    
+    # if(args.gene == 'MSI'):
+    #     cv_data_func = msimss_create_cv_data
+    # elif (args.gene == 'WGD'):
+    #     cv_data_func = wgd_create_cv_data
+    # else:
+    cv_data_func = create_cv_data
 
-    if(args.gene == 'MSI'):
-        cv_data_func = msimss_create_cv_data
-    elif (args.gene == 'WGD'):
-        cv_data_func = wgd_create_cv_data
-    else:
-        cv_data_func = create_cv_data
-
-    for i, (train_index, val_index) in enumerate((k_fold.split(available_patient_id))):
+    for i, (train_index, test_index) in enumerate((k_fold.split(available_patient_id))):
+        if(args.evaluate_mode == 'holdout'):
+            train_index, val_index = train_test_split(train_index, test_size = 0.25, random_state=42)
         train_dataset, test_dataset, positive_count, negative_count = cv_data_func(available_patient_id,
                                                                                     patches_features,
                                                                                     cluster_labels,
@@ -82,8 +86,7 @@ if __name__ == '__main__':
                                                                                     val_index,
                                                                                     lookup_dic,
                                                                                     level = args.level)
-
-
+            
         train_loader = Dataloader(train_dataset, batch_size = 1, shuffle=True,
                                     num_workers = 4, pin_memory = True, drop_last = False)
         val_loader = Dataloader(val_loader, batch_size = 1, shuffle=True,
@@ -112,3 +115,6 @@ if __name__ == '__main__':
                 max_auc = val_logs['AUC']
                 torch.save(model_name)
                 print('Model save # {}'.format(model_name))
+        
+        if(args.evaluate_mode == 'holdout'):
+            break
