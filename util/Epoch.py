@@ -16,7 +16,7 @@ class Epoch:
 
         self.positive_count = positive_count
         self.negative_count = negative_count
-        
+        self.accumulation_steps = 32
 
     def to_device(self):
         self.model.to(self.device)
@@ -36,16 +36,18 @@ class Epoch:
         logs = {}
 
         with tqdm(dataloder, desc = self.stage, file = sys.stdout) as iterator:
-            for x, y, patch_names in iterator:
+            for i, (x, y, patch_names) in enumerate(iterator):
                 x = [xi.to(self.device) for xi in x]
                 y = y.to(self.device)
                 
                 loss, pred, weights = self.batch_update(x, y)
-                loss = loss.cpu().detach().numpy()
-                loss_meter.add(loss)
-                logs.update({'loss' : loss})
+                if((i+1)%self.accumulation_steps == 0):
+                    self.optimizer.step()
+                    loss = loss.cpu().detach().numpy()
+                    loss_meter.add(loss)
+                    logs.update({'loss' : loss})
 
-                iterator.set_postfix_str('Loss:'+str(logs['loss']))
+                    iterator.set_postfix_str('Loss:'+str(logs['loss']))
 
         return logs
 
@@ -69,9 +71,8 @@ class TrainEpoch(Epoch):
         pred, instance_loss, cluster_attention_weight = self.model(x, y)
         bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]))
         total_loss = bag_loss + instance_loss
-
+        total_loss = total_loss / self.accumulation_steps
         total_loss.backward()
-        self.optimizer.step()
 
         return total_loss, pred, cluster_attention_weight
 
@@ -94,7 +95,7 @@ class ValidEpoch(Epoch):
         with torch.no_grad():
             pred, instance_loss, cluster_attention_weight = self.model(x, y)
             bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]))
-            total_loss = bag_loss + instance_loss
+            total_loss = bag_loss
 
         return total_loss, pred, cluster_attention_weight
 
