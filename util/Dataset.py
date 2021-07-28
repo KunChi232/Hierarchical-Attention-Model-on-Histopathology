@@ -10,7 +10,7 @@ def load_data(cancer_type = 'COAD', level = 'slide', use_kather_data = True):
             patch_features = pickle.load(f)
         with open('../data/kather_msimss/Feature/R50ImageNet_patient_cluster_label_k=10.pkl', 'rb') as f:
             cluster_label = pickle.load(f)
-            
+
         return patch_features, cluster_label 
 
     if cancer_type == 'COAD':
@@ -63,11 +63,14 @@ def load_label(path):
         dic = pickle.load(f)
     return dic       
 
-def get_available_id(lookup, cluster_label):
+def get_available_id(lookup, cluster_label, use_kather_data):
     has_label_patient_id = list(lookup.keys())
     available_ids = []
     for p in cluster_label.keys():
-        p = p[:12]
+        if(use_kather_data):
+            p = p.split('/')[-1][-27:-15]
+        else:
+            p = p[:12]
         if(p not in available_ids and p in has_label_patient_id):
             available_ids.append(p)
     return available_ids

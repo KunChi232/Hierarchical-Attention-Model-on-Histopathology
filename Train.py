@@ -24,6 +24,7 @@ parser.add_argument('--k_sample', type = int, default = 2,
                     help = 'Number of top and bottom cluster to be selected')
 parser.add_argument('--save_path', type = str,
                     help = 'Model save path')
+
 # parser.add_argument('--task', type = str,
 #                     help = 'MSI, CNA, WDG, KRAS, etc.')
 # parser.add_argument('--gene', type = str)
@@ -37,6 +38,8 @@ parser.add_argument('--label', type = str, default = None,
 parser.add_argument('--lr', type = float, default = 3e-4)
 parser.add_argument('--epoch', type = int, default = 60)
 parser.add_argument('--tau', type = float, default = 0.7)
+parser.add_argument('--evaluate mode', type = str, default='holdout',
+                    help='holdout or kfold')
 parser.add_argument('--kfold', type = int, default = 5)
 
 
@@ -51,13 +54,16 @@ if __name__ == '__main__':
 
     if(args.label == None):
         raise ValueError('label pickle file path cannot be empty')
+    if(args.use_kather_data):
+        if(args.level == 'slide'):
+            raise ValueError('if you want to use kather et al. dataset, you have to set level to patient-level')
 
     k_fold = KFold(n_splits = args.kfold)
     
 
     lookup_dic = load_label(args.label)
     patches_features, cluster_labels = load_data(cancer_type = args.cancer_type,
-                                                level = args.level,)
+                                                level = args.level, use_kather_data= args.use_kather_data)
 
     available_patient_id = get_available_id(lookup_dic, cluster_labels)
 
