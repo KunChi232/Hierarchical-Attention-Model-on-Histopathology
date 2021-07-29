@@ -17,7 +17,7 @@ parser.add_argument('--cancer_type', type = str, default = 'COAD',
                     help = 'Only including COAD, READ and CRC')
 parser.add_argument('--level', type=str, default = 'slide',
                     help = 'Prediction level, slide or patient')
-parser.add_argument('--hidden_dim', type = int, default = 2048,
+parser.add_argument('--hidden_dim', type = int, default = 512,
                     help = 'patch features dimension')
 parser.add_argument('--encoder_layer', type = int, default = 1,
                     help = 'Number of Transformer Encoder layer')

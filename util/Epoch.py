@@ -93,7 +93,7 @@ class ValidEpoch(Epoch):
     def batch_update(self, x, y):
         with torch.no_grad():
             pred, instance_loss, cluster_attention_weight = self.model(x, y)
-            bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]).to(self.device))
+            bag_loss = F.cross_entropy(pred, y)
             total_loss = bag_loss
 
         return total_loss, pred, cluster_attention_weight

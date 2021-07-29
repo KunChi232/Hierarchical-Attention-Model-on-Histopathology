@@ -1,6 +1,6 @@
 
 import torch
-from torch.utils.data import Dataloader
+from torch.utils.data import DataLoader
 
 from util.Dataset import load_label, ClusterDataset, load_TMA_data
 from util.TransformerMIL import MIL
@@ -15,12 +15,13 @@ parser = argparse.ArgumentParser("TMA Extenral Validation Setting")
 
 parser.add_argument('--level', type=str, default = 'slide',
                     help = 'Prediction level, slide or patient')
-parser.add_argument('--hidden_dim', type = int, default = 2048,
+parser.add_argument('--hidden_dim', type = int, default = 512,
                     help = 'patch features dimension')
 parser.add_argument('--encoder_layer', type = int, default = 1,
                     help = 'Number of Transformer Encoder layer')
 parser.add_argument('--k_sample', type = int, default = 2,
                     help = 'Number of top and bottom cluster to be selected')
+parser.add_argument('--tau', type = float, default = 0.7)
 parser.add_argument('--save_path', type = str,
                     help = 'Model save path')
 
@@ -50,7 +51,7 @@ if __name__ == '__main__':
                 evaluate_cluster[k][c].append(p)
 
     evaluate_dataset = ClusterDataset(patches_features, evaluate_cluster, lookup_dic)
-    evaluate_loader = Dataloader(evaluate_dataset, batch_size = 1, shuffle = False, num_workers = 1, pin_memory = True, drop_last = True)
+    evaluate_loader = DataLoader(evaluate_dataset, batch_size = 1, shuffle = False, num_workers = 1, pin_memory = True, drop_last = True)
 
     model = MIL(hidden_dim = args.hidden_dim, encoder_layer = args.encoder_layer, k_sample = args.k_sample, tau = args.tau)
     model = EMA(model, 0.999)
