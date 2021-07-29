@@ -105,15 +105,17 @@ if __name__ == '__main__':
 
 
         max_auc = 0
+        min_loss = float('inf')
 
         model_name = os.path.join(args.save_path, str(i), 'R50TransformerMIL.h5')
 
         for epoch_count in range(1, args.epoch + 1) :
+            print('Epoch: {}'.format(epoch_count))
             train_logs = train_epoch.run(train_loader)
             val_logs = val_epoch.run(val_loader)
 
-            if max_auc < val_logs['AUC']:
-                max_auc = val_logs['AUC']
+            if min_loss > val_logs['loss']:
+                min_loss = val_logs['loss']
                 if(not os.path.exists(os.path.join(args.save_path, str(i)))):
                     os.mkdir(os.path.join(args.save_path, str(i)))
                 torch.save(model.state_dict(), model_name)
