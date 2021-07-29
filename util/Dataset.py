@@ -282,7 +282,8 @@ class ClusterDataset(Dataset):
     def __getitem__(self, i):
         p_id = self.patient[i]
         cluster = self.cluster[p_id]
-        p_id = p_id[:12]
+        if(isinstance(p_id, str)):
+            p_id = p_id[:12]
         data = []
         patch_name = []
         for ind, patch in enumerate(cluster):              
