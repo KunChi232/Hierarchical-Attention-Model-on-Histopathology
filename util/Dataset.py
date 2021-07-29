@@ -116,7 +116,7 @@ def drop(cluster, threshold):
         del cluster[s_id]
 
 
-def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup, level = 'slide'):
+def create_cv_data(patients, all_features, cluster_label, train_index, test_index, lookup, level = 'slide'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
     test_cluster = {}
@@ -168,7 +168,7 @@ def create_cv_data(patients, all_features, cluster_label, tumor_patch, train_ind
     return train_dataset, test_dataset, pos_count, len(train_cluster) - pos_count
 
 
-def wgd_create_cv_data(patients, all_features, cluster_label, tumor_patch, train_index, test_index, lookup, level = 'slide'):
+def wgd_create_cv_data(patients, all_features, cluster_label, train_index, test_index, lookup, level = 'slide'):
     train_patient, test_patient = np.array(patients)[train_index], np.array(patients)[test_index]
     train_cluster = {}
     test_cluster = {}
