@@ -1,6 +1,6 @@
 
 import torch
-from torch.utils.data import Dataloader
+from torch.utils.data import DataLoader
 
 from util.Dataset import load_data, load_label, get_available_id, create_cv_data, msimss_create_cv_data, wgd_create_cv_data
 from util.TransformerMIL import MIL
@@ -39,7 +39,7 @@ parser.add_argument('--label', type = str, default = None,
 parser.add_argument('--lr', type = float, default = 3e-4)
 parser.add_argument('--epoch', type = int, default = 60)
 parser.add_argument('--tau', type = float, default = 0.7)
-parser.add_argument('--evaluate mode', type = str, default='holdout',
+parser.add_argument('--evaluate_mode', type = str, default='holdout',
                     help='holdout or kfold')
 parser.add_argument('--kfold', type = int, default = 5)
 
@@ -54,9 +54,8 @@ if __name__ == '__main__':
 
     if(args.label == None):
         raise ValueError('label pickle file path cannot be empty')
-    if(args.use_kather_data):
-        if(args.level == 'slide'):
-            raise ValueError('if you want to use kather et al. dataset, you have to set level to patient-level')
+    if(args.use_kather_data and args.level == 'slide'):
+        raise ValueError('if you want to use kather et al. dataset, you have to set level to patient-level')
 
     k_fold = KFold(n_splits = args.kfold)
     
@@ -88,9 +87,9 @@ if __name__ == '__main__':
                                                                                     lookup_dic,
                                                                                     level = args.level)
             
-        train_loader = Dataloader(train_dataset, batch_size = 1, shuffle=True,
+        train_loader = DataLoader(train_dataset, batch_size = 1, shuffle=True,
                                     num_workers = 4, pin_memory = True, drop_last = False)
-        val_loader = Dataloader(val_loader, batch_size = 1, shuffle=True,
+        val_loader = DataLoader(test_dataset, batch_size = 1, shuffle=True,
                                     num_workers = 4, pin_memory = True, drop_last = False)
 
         model = MIL(hidden_dim = args.hidden_dim, encoder_layer = args.encoder_layer, k_sample = args.k_sample, tau = args.tau)
@@ -130,7 +129,7 @@ if __name__ == '__main__':
                                                                             test_index,
                                                                             lookup_dic,
                                                                             level = args.level)
-            test_loader = Dataloader(test_dataset, batch_size = 1, shuffle = False, num_workers = 4, pin_memory = True, dropout = False)
+            test_loader = DataLoader(test_dataset, batch_size = 1, shuffle = False, num_workers = 4, pin_memory = True, dropout = False)
 
             
             test_epoch = ValidEpoch(model, device = 'cuda', stage = 'Holdout testing', 

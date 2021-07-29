@@ -301,7 +301,7 @@ class ClusterDataset(Dataset):
             
             return data, np.array([1- score , score]), self.cls_lookup[p_id]
         else:
-            return data, patch_name, self.cls_lookup[p_id]
+            return data, self.cls_lookup[p_id], patch_name
         
         
     def __len__(self):

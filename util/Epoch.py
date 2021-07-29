@@ -20,8 +20,7 @@ class Epoch:
 
     def to_device(self):
         self.model.to(self.device)
-        if(self.optimizer):
-            self.optimizer.to(self.device)
+
 
     def on_epoch_start(self):
         pass
@@ -69,7 +68,7 @@ class TrainEpoch(Epoch):
     def batch_update(self, x, y):
         self.optimizer.zero_grad()
         pred, instance_loss, cluster_attention_weight = self.model(x, y)
-        bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]))
+        bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]).to(self.device))
         total_loss = bag_loss + instance_loss
         total_loss = total_loss / self.accumulation_steps
         total_loss.backward()
@@ -94,7 +93,7 @@ class ValidEpoch(Epoch):
     def batch_update(self, x, y):
         with torch.no_grad():
             pred, instance_loss, cluster_attention_weight = self.model(x, y)
-            bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]))
+            bag_loss = F.cross_entropy(pred, y, weight = torch.tensor([1/self.negative_count, 1/self.positive_count]).to(self.device))
             total_loss = bag_loss
 
         return total_loss, pred, cluster_attention_weight
