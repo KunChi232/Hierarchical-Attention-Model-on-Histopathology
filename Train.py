@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
             if max_auc < val_logs['AUC']:
                 max_auc = val_logs['AUC']
-                torch.save(model_name)
+                torch.save(model.state_dict(), model_name)
                 print('Model save # {}'.format(model_name))
         
 
