@@ -122,7 +122,7 @@ class ValidEpoch(Epoch):
 
                 #store each bag label and prediction
                 y = y.detach().cpu().numpy()
-                output = torch.softmax(output, dim = 1)[:, 1].detach().cpu().numpy()
+                output = torch.softmax(pred, dim = 1)[:, 1].detach().cpu().numpy()
                 for p, yi in zip(output, y):
                     model_prediction.append(p)
                     ground_truth.append(yi)
