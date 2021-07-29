@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 from tqdm import tqdm
-from meter import AverageValueMeter
+from .meter import AverageValueMeter
 import sys
 
 from sklearn.metrics import roc_auc_score, average_precision_score
