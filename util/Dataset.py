@@ -92,14 +92,11 @@ def get_TMA_available_id(keys, lookup, tumor_id_lookup):
             available_ids.append(tumor_id_lookup[name])
     available_ids = set(available_ids)
     return available_ids
-def get_available_id(lookup, cluster_label, use_kather_data):
+def get_available_id(lookup, cluster_label):
     has_label_patient_id = list(lookup.keys())
     available_ids = []
     for p in cluster_label.keys():
-        if(use_kather_data):
-            p = p.split('/')[-1][-27:-15]
-        else:
-            p = p[:12]
+        p = p[:12]
         if(p not in available_ids and p in has_label_patient_id):
             available_ids.append(p)
     return available_ids
