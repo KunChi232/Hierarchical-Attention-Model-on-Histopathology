@@ -1,5 +1,5 @@
 ## Requirements
-* Pyhon==3.6.0
+* Python==3.6.0
 * torch==1.6.0
 * torchvision==0.7.0
 * sciki-learn
