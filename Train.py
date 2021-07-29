@@ -114,6 +114,8 @@ if __name__ == '__main__':
 
             if max_auc < val_logs['AUC']:
                 max_auc = val_logs['AUC']
+                if(not os.path.exists(os.path.join(args.save_path, str(i)))):
+                    os.mkdir(os.path.join(args.save_path, str(i)))
                 torch.save(model.state_dict(), model_name)
                 print('Model save # {}'.format(model_name))
         
