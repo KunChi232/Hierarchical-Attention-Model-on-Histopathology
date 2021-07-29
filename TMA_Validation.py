@@ -28,7 +28,7 @@ parser.add_argument('--save_path', type = str,
 parser.add_argument('--label', type = str, default = None,
                     help = 'path to label pickle file')
 
-parser.add_argument('--evaluate mode', type = str, default='holdout',
+parser.add_argument('--evaluate_mode', type = str, default='holdout',
                     help='holdout or kfold')
 parser.add_argument('--kfold', type = int, default = 5)
 
