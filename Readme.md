@@ -1,5 +1,5 @@
 ## Hierarchical-Attention-Model
-
+![](https://github.com/KunChi232/Hierarchical-Attention-Model-on-Histopathology/blob/master/imgs/overview.png?raw=true "Title")
 
 ## Requirements
 * Python==3.6.0
