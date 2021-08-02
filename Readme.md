@@ -4,7 +4,7 @@
 * torchvision==0.7.0
 * sciki-learn
 * numpy
-* smooth-topk
+* [smooth-topk](https://github.com/oval-group/smooth-topk)
 * opencv-python
 * tqdm
 
