@@ -21,9 +21,24 @@ TMA External Validation:
 ``` python
 python3 TMA_Validation.py --level patient --hidden_dim 512 --encoder_layer 6 --k_sample 3 -- tau 0.5 --save_path 'path/to/saved/weights' --label 'path/to/label pickle file' --evaluate_mode kfold --kfold 5
 ```
+Arguments:
+```shell script
+--level                 slide or patient level
+--hidden_dim            The dimension in the Transformer encoder
+--encoder_layer         The layers of the Transformer encoder
+--k_sample              The top-k and bottom-k for the instance selection
+--tau                   The smoothness term for smoothSVM
+--use_kather_data       Using the data provided by kather et al. or not
+--save_path             Model weights save path
+--label                 Path to label pickle file
+--lr                    Learning rate
+--epoch                 Training epochs
+--evaluate_mode         Kfold or holdout test
+--kfold                 The number of fold
+```
 
 ## Whole Slide Images Tiling
-Please refer to this github [repo](https://github.com/mahmoodlab/CLAM), or you can download the preprocessed data provided by [Kather et al](https://www.nature.com/articles/s41591-019-0462-y).
+Please refer to this github [repo](https://github.com/mahmoodlab/CLAM), or you can download the processed dataset provided by [Kather et al](https://www.nature.com/articles/s41591-019-0462-y).
 
 ## Data Preparation
 
